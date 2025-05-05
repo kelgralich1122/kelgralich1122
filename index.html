@@ -4,98 +4,1085 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelgralich Music</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --primary: #5D5CDE;
+            --secondary: #ff6b6b;
+            --dark: #121212;
+            --light: #f8f9fa;
+            --accent: #f857a6;
+        }
+
+        /* Dark mode */
+        .dark {
+            --bg-primary: var(--dark);
+            --text-primary: var(--light);
+            --card-bg: #1e1e1e;
+        }
+        
+        /* Light mode */
+        :root:not(.dark) {
+            --bg-primary: var(--light);
+            --text-primary: #121212;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .logo-text {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .new-badge {
+            background: linear-gradient(45deg, #ff5e62, #ff9966);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+            animation: pulse 1.5s infinite;
+        }
+
+        .hot-badge {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            animation: shake 2s infinite;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), #7474ff);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(93, 92, 222, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(93, 92, 222, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary), #ff9a8b);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.5);
+        }
+
+        .reels-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 15px;
+            padding: 20px 0;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .reels-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .reel {
+            scroll-snap-align: start;
+            min-width: 200px;
+            height: 350px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .reel-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .reel-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px;
+            color: white;
+        }
+
+        .reel-actions {
+            position: absolute;
+            right: 10px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .reel-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .playlist {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .music-card {
+            position: relative;
+        }
+
+        .music-cover {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 12px;
+            transition: transform 0.3s;
+        }
+        
+        .music-card:hover .music-cover {
+            transform: scale(1.05);
+        }
+
+        .music-info {
+            padding: 15px;
+        }
+
+        .comment-box {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .comments-section {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .comment {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+        }
+
+        .footer-link {
+            color: var(--primary);
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            10% { transform: rotate(10deg); }
+            20% { transform: rotate(-10deg); }
+            30% { transform: rotate(6deg); }
+            40% { transform: rotate(-6deg); }
+            50% { transform: rotate(0deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .logo-container {
+            position: relative;
+            width: 50px;
+            height: 50px;
+        }
+
+        .logo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            transform: rotate(-5deg);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            animation: float 5s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: rotate(-5deg) translateY(0px); }
+            50% { transform: rotate(-3deg) translateY(-5px); }
+            100% { transform: rotate(-5deg) translateY(0px); }
+        }
+
+        /* Custom audio player */
+        .custom-audio-player {
+            width: 100%;
+            background-color: rgba(128, 128, 128, 0.1);
+            border-radius: 25px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .audio-control {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .audio-control:hover {
+            background: var(--accent);
+        }
+
+        .progress-container {
+            flex: 1;
+            height: 8px;
+            background-color: rgba(128, 128, 128, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 4px;
+            transition: width 0.1s linear;
+        }
+
+        .time-display {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        /* Mobile styling */
+        @media (max-width: 768px) {
+            .playlist {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .reel {
+                min-width: 150px;
+                height: 280px;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
-    <!-- Header -->
--md sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <!-- Logo -->
-            <div class="flex items-center space-x-2">
-                <img src="./assets/images/logo.png" alt="Kelgralich Logo" class="w-12 h-12">
-                <h1 class="text-xl font-bold text-gray-800 dark:text-white">Kelgralich Music</h1>
+<body>
+    <header class="sticky top-0 bg-opacity-90 backdrop-filter backdrop-blur-lg z-50" style="background-color: var(--bg-primary);">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="logo-container">
+                        <div class="logo">K</div>
+                    </div>
+                    <h1 class="text-2xl font-bold logo-text">Kelgralich</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="theme-toggle" class="p-2 rounded-full" style="background-color: var(--card-bg);">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                    <a href="https://wa.me/255684520213" target="_blank" class="btn-primary">
+                        <i class="fab fa-whatsapp mr-2"></i> WhatsApp
+                    </a>
+                </div>
             </div>
-            <!-- Navigation -->
-            <nav class="flex items-center space-x-4">
-                <a href="#reels" class="text-gray-600 dark:text-gray-300 hover:text-primary">Reels</a>
-                <a href="#movies" class="text-gray-600 dark:text-gray-300 hover:text-primary">Movies</a>
-                <a href="#status" class="text-gray-600 dark:text-gray-300 hover:text-primary">WhatsApp Status</a>
-                <a href="#new" class="text-gray-600 dark:text-gray-300 hover:text-primary">New Songs</a>
-            </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero bg-gradient-to-r from-primary to-secondary text-white py-20 text-center">
-        <h2 class="text-4xl font-bold mb-4">Welcome to Kelgralich Music</h2>
-        <p class="mb-6">Your ultimate music and entertainment platform!</p>
-        <button class="btn-primary">Explore Now</button>
-    </section>
+    <main class="container mx-auto px-4 pb-20">
+        <!-- Hero Section -->
+        <section class="py-12 md:py-20 flex flex-col md:flex-row items-center gap-8">
+            <div class="md:w-1/2">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">Experience Music Like Never Before</h1>
+                <p class="text-lg mb-8 opacity-80">Listen to Kelgralich's latest tracks, watch videos, and download your favorites. Join the community today!</p>
+                <div class="flex flex-wrap gap-4">
+                    <button class="btn-primary">
+                        <i class="fas fa-play mr-2"></i> Latest Releases
+                    </button>
+                    <button class="btn-secondary">
+                        <i class="fas fa-download mr-2"></i> Download Music
+                    </button>
+                </div>
+            </div>
+            <div class="md:w-1/2 relative">
+                <img src="https://picsum.photos/600/400" alt="Kelgralich Music" class="w-full rounded-xl shadow-xl">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-30 rounded-xl"></div>
+            </div>
+        </section>
 
-    <!-- Reels Section -->
-    <section id="reels" class="py-10">
-        <div class="container mx-auto px-4">
-            <h3 class="text-2xl font-bold mb-6">Reels</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Reel Card -->
-                <div class="reel-card relative">
-                    <video class="rounded-lg shadow-lg w-full" controls>
-                        <source src="./assets/videos/reel1.mp4" type="video/mp4">
+        <!-- New Release - Siwezi -->
+        <section class="py-10">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <i class="fas fa-fire text-red-500"></i> New Release
+            </h2>
+            <div class="card p-6">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="md:w-1/3 relative">
+                        <div class="hot-badge">
+                            <i class="fas fa-fire"></i> HOT
+                        </div>
+                        <div class="new-badge">NEW</div>
+                        <img id="song-cover" src="https://picsum.photos/400/400" alt="Siwezi - Kelgralich ft Dvanny" class="w-full rounded-lg shadow-lg">
+                    </div>
+                    <div class="md:w-2/3">
+                        <h3 class="text-2xl font-bold mb-2">Siwezi - Kelgralich ft Dvanny</h3>
+                        <p class="mb-4 opacity-80">Experience the latest hit from Kelgralich featuring Dvanny. An emotional journey that will touch your heart.</p>
+                        
+                        <div class="custom-audio-player mb-6" data-audio="https://example.com/path-to-siwezi.mp3">
+                            <button class="audio-control play-pause">
+                                <i class="fas fa-play play-icon"></i>
+                                <i class="fas fa-pause pause-icon hidden"></i>
+                            </button>
+                            <div class="progress-container">
+                                <div class="progress-bar"></div>
+                            </div>
+                            <div class="time-display">0:00 / 0:00</div>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-3">
+                            <button class="btn-primary download-btn" data-song="siwezi">
+                                <i class="fas fa-download mr-2"></i> Download
+                            </button>
+                            <button class="btn-secondary like-btn" data-song="siwezi">
+                                <i class="far fa-heart mr-1"></i> <span class="like-count">127</span>
+                            </button>
+                            <button class="btn-secondary comment-btn" data-song="siwezi">
+                                <i class="far fa-comment mr-1"></i> Comments
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Comments Section -->
+                <div class="comment-box mt-6 hidden" id="comments-siwezi">
+                    <h4 class="text-xl font-bold mb-4">Comments</h4>
+                    <div class="mb-4">
+                        <textarea class="w-full p-3 rounded-lg" style="background-color: var(--bg-primary); color: var(--text-primary);" placeholder="Add your comment..." rows="2"></textarea>
+                        <div class="flex justify-end mt-2">
+                            <button class="btn-primary">Post</button>
+                        </div>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comment">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">J</div>
+                                <span class="font-semibold">John Doe</span>
+                            </div>
+                            <p>This song is amazing! I've been listening to it on repeat 🔥</p>
+                            <div class="flex gap-3 mt-1 text-sm opacity-70">
+                                <span>2 days ago</span>
+                                <button class="hover:text-primary">Like</button>
+                                <button class="hover:text-primary">Reply</button>
+                            </div>
+                        </div>
+                        <div class="comment">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center text-white font-bold">M</div>
+                                <span class="font-semibold">Maria S.</span>
+                            </div>
+                            <p>The beat is fire! Kelgralich never disappoints!</p>
+                            <div class="flex gap-3 mt-1 text-sm opacity-70">
+                                <span>1 day ago</span>
+                                <button class="hover:text-primary">Like</button>
+                                <button class="hover:text-primary">Reply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reels Section -->
+        <section class="py-10">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <i class="fas fa-film text-purple-500"></i> Trending Reels
+            </h2>
+            
+            <div class="reels-container">
+                <div class="reel">
+                    <video class="reel-video" poster="https://picsum.photos/400/720" src="">
+                        <!-- Video Source would go here -->
                     </video>
-                    <div class="absolute top-0 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded-br-lg">HOT</div>
-                    <div class="reel-actions flex items-center justify-between mt-2">
-                        <button class="like-btn"><i class="fas fa-heart text-red-500"></i> Like</button>
-                        <button class="comment-btn"><i class="fas fa-comment"></i> Comment</button>
+                    <div class="reel-actions">
+                        <div class="reel-action">
+                            <i class="fas fa-heart text-2xl"></i>
+                            <span>245</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-comment text-2xl"></i>
+                            <span>42</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-share text-2xl"></i>
+                            <span>18</span>
+                        </div>
+                    </div>
+                    <div class="reel-info">
+                        <h3 class="font-bold">Behind the scenes - New Album</h3>
+                        <p class="text-sm opacity-80">Kelgralich • 3 days ago</p>
+                    </div>
+                </div>
+                
+                <div class="reel">
+                    <div class="new-badge">NEW</div>
+                    <video class="reel-video" poster="https://picsum.photos/401/720" src="">
+                        <!-- Video Source would go here -->
+                    </video>
+                    <div class="reel-actions">
+                        <div class="reel-action">
+                            <i class="fas fa-heart text-2xl"></i>
+                            <span>183</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-comment text-2xl"></i>
+                            <span>37</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-share text-2xl"></i>
+                            <span>12</span>
+                        </div>
+                    </div>
+                    <div class="reel-info">
+                        <h3 class="font-bold">Studio Session - Siwezi</h3>
+                        <p class="text-sm opacity-80">Kelgralich ft Dvanny • 1 day ago</p>
+                    </div>
+                </div>
+                
+                <div class="reel">
+                    <video class="reel-video" poster="https://picsum.photos/402/720" src="">
+                        <!-- Video Source would go here -->
+                    </video>
+                    <div class="reel-actions">
+                        <div class="reel-action">
+                            <i class="fas fa-heart text-2xl"></i>
+                            <span>327</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-comment text-2xl"></i>
+                            <span>58</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-share text-2xl"></i>
+                            <span>24</span>
+                        </div>
+                    </div>
+                    <div class="reel-info">
+                        <h3 class="font-bold">Live Performance Highlights</h3>
+                        <p class="text-sm opacity-80">Kelgralich • 1 week ago</p>
+                    </div>
+                </div>
+                
+                <div class="reel">
+                    <video class="reel-video" poster="https://picsum.photos/403/720" src="">
+                        <!-- Video Source would go here -->
+                    </video>
+                    <div class="reel-actions">
+                        <div class="reel-action">
+                            <i class="fas fa-heart text-2xl"></i>
+                            <span>198</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-comment text-2xl"></i>
+                            <span>31</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-share text-2xl"></i>
+                            <span>15</span>
+                        </div>
+                    </div>
+                    <div class="reel-info">
+                        <h3 class="font-bold">Music Video Teaser</h3>
+                        <p class="text-sm opacity-80">Kelgralich • 2 weeks ago</p>
+                    </div>
+                </div>
+                
+                <div class="reel">
+                    <video class="reel-video" poster="https://picsum.photos/404/720" src="">
+                        <!-- Video Source would go here -->
+                    </video>
+                    <div class="reel-actions">
+                        <div class="reel-action">
+                            <i class="fas fa-heart text-2xl"></i>
+                            <span>241</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-comment text-2xl"></i>
+                            <span>47</span>
+                        </div>
+                        <div class="reel-action">
+                            <i class="fas fa-share text-2xl"></i>
+                            <span>19</span>
+                        </div>
+                    </div>
+                    <div class="reel-info">
+                        <h3 class="font-bold">Fan Moments Compilation</h3>
+                        <p class="text-sm opacity-80">Kelgralich • 3 weeks ago</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Movies Section -->
-    <section id="movies" class="py-10 bg-gray-200 dark:bg-gray-800">
-        <div class="container mx-auto px-4">
-            <h3 class="text-2xl font-bold mb-4">Download Movies</h3>
-            <button class="btn-primary mt-4">Request Movies</button>
-        </div>
-    </section>
-
-    <!-- WhatsApp Status -->
-    <section id="status" class="py-10">
-        <div class="container mx-auto px-4">
-            <h3 class="text-2xl font-bold mb-4">Watch My WhatsApp Status</h3>
-            <a href="https://wa.me/+255684520213" target="_blank" class="btn-secondary">Go to WhatsApp</a>
-        </div>
-    </section>
-
-    <!-- New Songs -->
-    <section id="new" class="py-10 bg-gray-200 dark:bg-gray-800">
-        <div class="container mx-auto px-4">
-            <h3 class="text-2xl font-bold mb-4">New Songs</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- New Song Card -->
-                <div class="song-card relative">
-                    <div class="song-cover bg-gradient-to-r from-primary to-secondary rounded-lg h-40 flex items-center justify-center">
-                        <span class="text-white font-bold">New Song</span>
+        <!-- Music Playlist Section -->
+        <section class="py-10">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <i class="fas fa-music text-blue-500"></i> Latest Music
+            </h2>
+            
+            <div class="playlist">
+                <div class="music-card card">
+                    <div class="relative overflow-hidden rounded-t-lg">
+                        <div class="hot-badge">
+                            <i class="fas fa-fire"></i> HOT
+                        </div>
+                        <img src="https://picsum.photos/405/405" alt="Track 1" class="music-cover">
+                        <button class="absolute inset-0 m-auto w-16 h-16 bg-white bg-opacity-70 rounded-full flex items-center justify-center">
+                            <i class="fas fa-play text-2xl" style="color: var(--primary);"></i>
+                        </button>
                     </div>
-                    <div class="song-actions flex items-center justify-between mt-2">
-                        <button class="like-btn"><i class="fas fa-heart text-red-500"></i> Like</button>
-                        <a href="./assets/music/song1.mp3" download class="btn-secondary">Download</a>
+                    <div class="music-info">
+                        <h3 class="font-bold">Summer Vibes</h3>
+                        <p class="text-sm opacity-80">Kelgralich • 2 weeks ago</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-heart text-red-500"></i>
+                                <span>325</span>
+                            </div>
+                            <button class="btn-primary btn-sm text-sm py-1 px-3">
+                                <i class="fas fa-download mr-1"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="music-card card">
+                    <div class="relative overflow-hidden rounded-t-lg">
+                        <div class="new-badge">NEW</div>
+                        <img src="https://picsum.photos/406/406" alt="Track 2" class="music-cover">
+                        <button class="absolute inset-0 m-auto w-16 h-16 bg-white bg-opacity-70 rounded-full flex items-center justify-center">
+                            <i class="fas fa-play text-2xl" style="color: var(--primary);"></i>
+                        </button>
+                    </div>
+                    <div class="music-info">
+                        <h3 class="font-bold">Midnight Dreams</h3>
+                        <p class="text-sm opacity-80">Kelgralich • 3 days ago</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-heart text-red-500"></i>
+                                <span>217</span>
+                            </div>
+                            <button class="btn-primary btn-sm text-sm py-1 px-3">
+                                <i class="fas fa-download mr-1"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="music-card card">
+                    <div class="relative overflow-hidden rounded-t-lg">
+                        <img src="https://picsum.photos/407/407" alt="Track 3" class="music-cover">
+                        <button class="absolute inset-0 m-auto w-16 h-16 bg-white bg-opacity-70 rounded-full flex items-center justify-center">
+                            <i class="fas fa-play text-2xl" style="color: var(--primary);"></i>
+                        </button>
+                    </div>
+                    <div class="music-info">
+                        <h3 class="font-bold">Ocean Breeze</h3>
+                        <p class="text-sm opacity-80">Kelgralich • 1 month ago</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-heart text-red-500"></i>
+                                <span>189</span>
+                            </div>
+                            <button class="btn-primary btn-sm text-sm py-1 px-3">
+                                <i class="fas fa-download mr-1"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="music-card card">
+                    <div class="relative overflow-hidden rounded-t-lg">
+                        <img src="https://picsum.photos/408/408" alt="Track 4" class="music-cover">
+                        <button class="absolute inset-0 m-auto w-16 h-16 bg-white bg-opacity-70 rounded-full flex items-center justify-center">
+                            <i class="fas fa-play text-2xl" style="color: var(--primary);"></i>
+                        </button>
+                    </div>
+                    <div class="music-info">
+                        <h3 class="font-bold">Urban Beats</h3>
+                        <p class="text-sm opacity-80">Kelgralich • 2 months ago</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-heart text-red-500"></i>
+                                <span>278</span>
+                            </div>
+                            <button class="btn-primary btn-sm text-sm py-1 px-3">
+                                <i class="fas fa-download mr-1"></i> Download
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+            
+            <div class="text-center mt-8">
+                <button class="btn-primary">
+                    <i class="fas fa-plus mr-2"></i> Load More
+                </button>
+            </div>
+        </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-200 dark:bg-gray-800 py-6 text-center">
-        <p class="text-gray-600 dark:text-gray-300">&copy; 2025 Kelgralich Music. All Rights Reserved.</p>
+        <!-- WhatsApp Status Section -->
+        <section class="py-10">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <i class="fab fa-whatsapp text-green-500"></i> WhatsApp Status Updates
+            </h2>
+            
+            <div class="card p-6">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <div class="md:w-1/3">
+                        <div class="relative">
+                            <img src="https://picsum.photos/409/409" alt="WhatsApp Status" class="w-full rounded-lg shadow-lg">
+                            <div class="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-whatsapp text-5xl text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3">
+                        <h3 class="text-2xl font-bold mb-2">Stay Updated with Kelgralich</h3>
+                        <p class="mb-4 opacity-80">Get exclusive behind-the-scenes content, sneak peeks of upcoming releases, and personal messages from Kelgralich directly on WhatsApp Status.</p>
+                        <a href="https://wa.me/255684520213" target="_blank" class="btn-primary inline-flex items-center">
+                            <i class="fab fa-whatsapp mr-2"></i> View WhatsApp Status
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rewards Section -->
+        <section class="py-10">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <i class="fas fa-award text-yellow-500"></i> Fan Rewards
+            </h2>
+            
+            <div class="card p-6">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold mb-2">Earn Rewards for Your Support!</h3>
+                    <p class="opacity-80 max-w-2xl mx-auto">Like, comment, and engage with Kelgralich's content to earn points. Top fans can win exclusive rewards, including free uploads and special content access.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card p-5 text-center">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-heart text-2xl text-blue-500"></i>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Like Content</h4>
+                        <p class="opacity-80">Show your appreciation by liking Kelgralich's music, videos, and posts.</p>
+                    </div>
+                    
+                    <div class="card p-5 text-center">
+                        <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-comment text-2xl text-purple-500"></i>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Leave Comments</h4>
+                        <p class="opacity-80">Share your thoughts and feedback on Kelgralich's latest releases.</p>
+                    </div>
+                    
+                    <div class="card p-5 text-center">
+                        <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-gift text-2xl text-green-500"></i>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Win Rewards</h4>
+                        <p class="opacity-80">Earn exclusive content, free uploads, and special recognition as a top fan.</p>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button class="btn-primary">
+                        <i class="fas fa-star mr-2"></i> Check Your Rewards
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10" style="background-color: var(--card-bg);">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between gap-8">
+                <div class="md:w-1/3">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="logo-container">
+                            <div class="logo">K</div>
+                        </div>
+                        <h2 class="text-2xl font-bold logo-text">Kelgralich</h2>
+                    </div>
+                    <p class="opacity-80 mb-4">Experience music like never before with Kelgralich's unique sound and style. Download, stream, and engage with the latest content.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="footer-link">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                        <a href="#" class="footer-link">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="https://wa.me/255684520213" class="footer-link">
+                            <i class="fab fa-whatsapp text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link">Latest Releases</a></li>
+                        <li><a href="#" class="footer-link">Music Videos</a></li>
+                        <li><a href="#" class="footer-link">Download Music</a></li>
+                        <li><a href="#" class="footer-link">WhatsApp Status</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                        <li><a href="#" class="footer-link">Terms of Service</a></li>
+                        <li><a href="#" class="footer-link">Copyright Information</a></li>
+                        <li><a href="#" class="footer-link">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center">
+                <p class="opacity-80">&copy; 2023 Kelgralich Music. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="script.js"></script>
+    <script>
+        // Theme Toggle Functionality
+        function setupThemeToggle() {
+            const themeToggle = document.getElementById('theme-toggle');
+            
+            // Check system preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            // Listen for system preference changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                if (event.matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            });
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
+        }
+
+        // Audio Player Functionality
+        function setupAudioPlayers() {
+            const audioPlayers = document.querySelectorAll('.custom-audio-player');
+            
+            audioPlayers.forEach(player => {
+                const playPauseBtn = player.querySelector('.play-pause');
+                const playIcon = player.querySelector('.play-icon');
+                const pauseIcon = player.querySelector('.pause-icon');
+                const progressContainer = player.querySelector('.progress-container');
+                const progressBar = player.querySelector('.progress-bar');
+                const timeDisplay = player.querySelector('.time-display');
+                const audioSrc = player.dataset.audio;
+                
+                // Create audio element
+                const audio = new Audio();
+                audio.src = audioSrc;
+                
+                // Play/Pause functionality
+                playPauseBtn.addEventListener('click', () => {
+                    if (audio.paused) {
+                        audio.play();
+                        playIcon.classList.add('hidden');
+                        pauseIcon.classList.remove('hidden');
+                    } else {
+                        audio.pause();
+                        playIcon.classList.remove('hidden');
+                        pauseIcon.classList.add('hidden');
+                    }
+                });
+                
+                // Update progress and time
+                audio.addEventListener('timeupdate', () => {
+                    const progress = (audio.currentTime / audio.duration) * 100;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    // Format time display
+                    const currentMins = Math.floor(audio.currentTime / 60);
+                    const currentSecs = Math.floor(audio.currentTime % 60);
+                    const durationMins = Math.floor(audio.duration / 60) || 0;
+                    const durationSecs = Math.floor(audio.duration % 60) || 0;
+                    
+                    timeDisplay.textContent = `${currentMins}:${currentSecs < 10 ? '0' : ''}${currentSecs} / ${durationMins}:${durationSecs < 10 ? '0' : ''}${durationSecs}`;
+                });
+                
+                // Click on progress bar to seek
+                progressContainer.addEventListener('click', e => {
+                    const clickPosition = (e.offsetX / progressContainer.offsetWidth);
+                    audio.currentTime = clickPosition * audio.duration;
+                });
+                
+                // Reset on end
+                audio.addEventListener('ended', () => {
+                    progressBar.style.width = '0%';
+                    playIcon.classList.remove('hidden');
+                    pauseIcon.classList.add('hidden');
+                    audio.currentTime = 0;
+                });
+            });
+        }
+
+        // Like Functionality
+        function setupLikeButtons() {
+            const likeButtons = document.querySelectorAll('.like-btn');
+            
+            likeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const likeCount = button.querySelector('.like-count');
+                    let count = parseInt(likeCount.textContent);
+                    
+                    // Toggle liked state
+                    if (button.classList.contains('liked')) {
+                        button.classList.remove('liked');
+                        count--;
+                        button.querySelector('i').classList.remove('fas');
+                        button.querySelector('i').classList.add('far');
+                    } else {
+                        button.classList.add('liked');
+                        count++;
+                        button.querySelector('i').classList.remove('far');
+                        button.querySelector('i').classList.add('fas');
+                    }
+                    
+                    likeCount.textContent = count;
+                    
+                    // Store like state (would normally use a database)
+                    const songId = button.dataset.song;
+                    // This is a placeholder - in a real app you'd send this to a server
+                    console.log(`User liked song ${songId}. New count: ${count}`);
+                });
+            });
+        }
+
+        // Comment Section Toggle
+        function setupCommentButtons() {
+            const commentButtons = document.querySelectorAll('.comment-btn');
+            
+            commentButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const songId = button.dataset.song;
+                    const commentSection = document.getElementById(`comments-${songId}`);
+                    
+                    commentSection.classList.toggle('hidden');
+                });
+            });
+        }
+
+        // Download Functionality
+        function setupDownloadButtons() {
+            const downloadButtons = document.querySelectorAll('.download-btn');
+            
+            downloadButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const songId = button.dataset.song;
+                    
+                    // In a real implementation, this would trigger the actual download
+                    // For this demo, we'll just show an alert
+                    alert(`Downloading ${songId}... This would connect to your Google Drive in a real implementation.`);
+                });
+            });
+        }
+
+        // Reel Video Functionality
+        function setupReelVideos() {
+            const reels = document.querySelectorAll('.reel');
+            
+            reels.forEach(reel => {
+                const video = reel.querySelector('video');
+                
+                // Play video when clicked
+                reel.addEventListener('click', () => {
+                    if (video.paused) {
+                        // Pause all other videos first
+                        document.querySelectorAll('.reel video').forEach(v => {
+                            if (v !== video) {
+                                v.pause();
+                            }
+                        });
+                        
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                });
+                
+                // Prevent event propagation on action buttons
+                const actionButtons = reel.querySelectorAll('.reel-action');
+                actionButtons.forEach(button => {
+                    button.addEventListener('click', e => {
+                        e.stopPropagation();
+                    });
+                });
+            });
+        }
+
+        // Initialize all functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            setupThemeToggle();
+            setupAudioPlayers();
+            setupLikeButtons();
+            setupCommentButtons();
+            setupDownloadButtons();
+            setupReelVideos();
+            
+            // Generate random cover art for the featured song
+            const generateRandomCoverArt = () => {
+                const songCover = document.getElementById('song-cover');
+                
+                // Create a canvas for the cover art
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 400;
+                canvas.height = 400;
+                
+                // Create gradient background
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, '#5D5CDE');
+                gradient.addColorStop(1, '#f857a6');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add artist name
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.font = 'bold 40px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('KELGRALICH', canvas.width / 2, canvas.height / 2 - 50);
+                
+                // Add song title
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.font = 'bold 50px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('SIWEZI', canvas.width / 2, canvas.height / 2 + 20);
+                
+                // Add "ft Dvanny"
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.font = '30px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('ft. Dvanny', canvas.width / 2, canvas.height / 2 + 60);
+                
+                // Add some decorative elements
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(50, 50);
+                ctx.lineTo(350, 50);
+                ctx.lineTo(350, 350);
+                ctx.lineTo(50, 350);
+                ctx.closePath();
+                ctx.stroke();
+                
+                // Set the image source to the canvas data URL
+                songCover.src = canvas.toDataURL();
+            };
+            
+            generateRandomCoverArt();
+        });
+    </script>
 </body>
 </html>
