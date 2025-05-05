@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelgralich Music</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
+    <!-- Header -->
+-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <img src="./assets/images/logo.png" alt="Kelgralich Logo" class="w-12 h-12">
+                <h1 class="text-xl font-bold text-gray-800 dark:text-white">Kelgralich Music</h1>
+            </div>
+            <!-- Navigation -->
+            <nav class="flex items-center space-x-4">
+                <a href="#reels" class="text-gray-600 dark:text-gray-300 hover:text-primary">Reels</a>
+                <a href="#movies" class="text-gray-600 dark:text-gray-300 hover:text-primary">Movies</a>
+                <a href="#status" class="text-gray-600 dark:text-gray-300 hover:text-primary">WhatsApp Status</a>
+                <a href="#new" class="text-gray-600 dark:text-gray-300 hover:text-primary">New Songs</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero bg-gradient-to-r from-primary to-secondary text-white py-20 text-center">
+        <h2 class="text-4xl font-bold mb-4">Welcome to Kelgralich Music</h2>
+        <p class="mb-6">Your ultimate music and entertainment platform!</p>
+        <button class="btn-primary">Explore Now</button>
+    </section>
+
+    <!-- Reels Section -->
+    <section id="reels" class="py-10">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold mb-6">Reels</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Reel Card -->
+                <div class="reel-card relative">
+                    <video class="rounded-lg shadow-lg w-full" controls>
+                        <source src="./assets/videos/reel1.mp4" type="video/mp4">
+                    </video>
+                    <div class="absolute top-0 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded-br-lg">HOT</div>
+                    <div class="reel-actions flex items-center justify-between mt-2">
+                        <button class="like-btn"><i class="fas fa-heart text-red-500"></i> Like</button>
+                        <button class="comment-btn"><i class="fas fa-comment"></i> Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Movies Section -->
+    <section id="movies" class="py-10 bg-gray-200 dark:bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold mb-4">Download Movies</h3>
+            <button class="btn-primary mt-4">Request Movies</button>
+        </div>
+    </section>
+
+    <!-- WhatsApp Status -->
+    <section id="status" class="py-10">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold mb-4">Watch My WhatsApp Status</h3>
+            <a href="https://wa.me/+255684520213" target="_blank" class="btn-secondary">Go to WhatsApp</a>
+        </div>
+    </section>
+
+    <!-- New Songs -->
+    <section id="new" class="py-10 bg-gray-200 dark:bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold mb-4">New Songs</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- New Song Card -->
+                <div class="song-card relative">
+                    <div class="song-cover bg-gradient-to-r from-primary to-secondary rounded-lg h-40 flex items-center justify-center">
+                        <span class="text-white font-bold">New Song</span>
+                    </div>
+                    <div class="song-actions flex items-center justify-between mt-2">
+                        <button class="like-btn"><i class="fas fa-heart text-red-500"></i> Like</button>
+                        <a href="./assets/music/song1.mp3" download class="btn-secondary">Download</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-200 dark:bg-gray-800 py-6 text-center">
+        <p class="text-gray-600 dark:text-gray-300">&copy; 2025 Kelgralich Music. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
